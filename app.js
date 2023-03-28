@@ -1,6 +1,6 @@
 const express = require('express');
 const getTopics = require('./controllers/topics.controller');
-const getArticles = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles} = require('./controllers/articles.controller')
 const {
   invalidPathErrors,
   handleServerErrors,
@@ -9,21 +9,18 @@ const {
 } = require('./controllers/error-handling.controller');
 
 const app = express();
-app.use(express.json());
 
 app.get('/api', (req, res) => {
   res.status(200).send({ msg: 'Server is up and running...' });
 });
 app.get('/api/topics', getTopics);
-app.get('/api/articles/:article_id', getArticles);
+app.get('/api/articles/:article_id', getArticleByID);
+app.get('/api/articles', getAllArticles)
 
+app.all('/*', invalidPathErrors);
 app.use(customErrors);
 app.use(badPSQLRequests);
-app.all('/*', invalidPathErrors);
 
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(500).send('Server Error!');
-});
+app.use(handleServerErrors);
 
 module.exports = app;
