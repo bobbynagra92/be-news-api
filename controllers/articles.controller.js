@@ -1,11 +1,18 @@
-const fetchArticle = require('../models/articles.model')
+const {fetchArticle, fetchArticlesPlusCommentCount} = require('../models/articles.model')
 
-function getArticles(req,res, next){
+exports.getArticleByID = (req,res, next) => {
   const {article_id} = req.params; 
   fetchArticle(article_id).then((article) => {
     res.status(200).send({article});
   })
-  .catch(next)
+  .catch(next);
 }
 
-module.exports = getArticles
+exports.getAllArticles = (req, res, next) => {
+  fetchArticlesPlusCommentCount().then((articles) => {
+    res.status(200).send({articles});
+  })
+  .catch(next);
+
+}
+
