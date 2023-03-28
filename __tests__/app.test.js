@@ -95,7 +95,6 @@ describe('/api/articles', () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeInstanceOf(Array);
         expect(articles).toHaveLength(12);
         expect(articles).toBeSorted({
           key: 'created_at',

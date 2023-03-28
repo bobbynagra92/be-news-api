@@ -28,10 +28,3 @@ exports.fetchArticlesPlusCommentCount = () => {
       return result.rows;
     });
 }
-
-// SELECT articles.*, COUNT(comments.comment_id) AS comment_count 
-//   FROM articles
-//   JOIN comments
-//   ON articles.article_id = comments.article_id 
-//   SORT BY articles.created_at DESC;
-//   DROP COLUMN articles.body;
