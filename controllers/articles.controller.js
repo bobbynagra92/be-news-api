@@ -17,18 +17,10 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
   const {article_id} = req.params;
-  fetchArticleComments(article_id).then((comments) => {
-    if (comments.length){
-      res.status(200).send({comments});
-    }
-  })
-  .then(() => {
-    return fetchArticle(article_id);
-  })
-  .then(result => {
-    if(result.hasOwnProperty('article_id')){
-      res.status(200).send([]);
-    };
+  const commentPromises = [fetchArticleComments(article_id), fetchArticle(article_id)]
+
+  Promise.all(commentPromises).then((result) => {
+      res.status(200).send({comments: result[0]})
   })
   .catch(next)
 }

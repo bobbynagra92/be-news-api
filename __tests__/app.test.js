@@ -149,26 +149,34 @@ describe('/api/articles/:article_id/comments', () => {
   });
 
   test('GET 200: Responds with an empty array when there are no comment but article_id is valid', () => {
-    return request(app).get('/api/articles/4/comments').expect(200).then(({body}) => {
-      expect(body).toEqual([]);
-    })
+    return request(app)
+      .get('/api/articles/4/comments')
+      .expect(200)
+      .then(({body}) => {
+        const {comments} = body
+        expect(comments).toEqual([]);
+      })
   })
 
   test('ERROR 400: Responds with an error message for an article_id which is not within the database', () => {
-    return request(app)
-      .get('/api/articles/not-a-num/comments')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe('Invalid input');
-      });
+    return (
+      request(app)
+        .get('/api/articles/not-a-num/comments')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Invalid input');
+        })
+    );
   });
 
   test('ERROR 404: Responds with an error message when passed an invalid path', () => {
-    return request(app)
-      .get('/api/articles/99999/comments')
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe('No article with that ID');
-      });
+    return (
+      request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('No article with that ID');
+        })
+    );
   });
 });
