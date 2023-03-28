@@ -40,10 +40,50 @@ describe('/api/topics', () => {
         });
       });
   });
-  test('Status 404: Responds with an error message when passed an invalid path', () => {
-    return request(app).get('/api/not-a-valid-path').expect(404).then(({body}) => {
-      expect(body.msg).toBe('Invalid path');
-    })
-  })
+  test('ERROR 404: Responds with an error message when passed an invalid path', () => {
+    return request(app)
+      .get('/api/not-a-valid-path')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid path');
+      });
+  });
+});
 
+describe('/api/articles/:article_id', () => {
+  test('GET 200: Responds with an article object', () => {
+    return request(app)
+      .get('/api/articles/5')
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: 5,
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test('ERROR 400: Responds with an error message for an invalid article request', () => {
+    return request(app)
+      .get('/api/articles/not-an-article-id')
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 404: Respond with an error message if the article_id is not in the database', () => {
+    return (
+      request(app)
+      .get('/api/articles/9999999')
+        .then(({ body }) => {
+          expect
+          expect(body.msg).toBe('No article with that ID');
+        })
+    );
+  });
 });
