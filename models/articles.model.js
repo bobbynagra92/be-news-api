@@ -45,13 +45,17 @@ exports.fetchArticleComments = (article_id) => {
 };
 
 exports.addComment = (article_id, comment) => {
+  let votes = 0;
+  if (comment.hasOwnProperty('votes')){
+    votes = comment.votes
+  }
   return db.query(`
     INSERT INTO comments
       (body, votes, author, article_id)
     VALUES
       ($1, $2, $3, $4)
     RETURNING *;
-`, [comment.body, 0, comment.username, article_id]).then((result) => {
+`, [comment.body, votes, comment.username, article_id]).then((result) => {
   return result.rows[0];
 })
 };

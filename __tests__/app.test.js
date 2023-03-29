@@ -191,18 +191,53 @@ describe('/api/articles/:article_id/comments', () => {
         const { comment } = body;
         expect(comment).toMatchObject({
           comment_id: 19,
-          votes: expect.any(Number),
+          votes: 0,
           created_at: expect.any(String),
-          author: expect.any(String),
-          body: expect.any(String),
+          author: 'lurker',
+          body: 'test',
           article_id: 1,
         });
       });
   });
-  test('ERROR 400: Responds with an error message when attempting to POST an invalid comment', () => {
+  test('POST 201: Adds comment and responds with posted comment when extra inputs are specified', () => {
+    const newComment = {
+      username: 'lurker',
+      body: 'test',
+      votes: 20,
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          votes: 20,
+          created_at: expect.any(String),
+          author: 'lurker',
+          body: 'test',
+          article_id: 1,
+        });
+      });
+  });
+  test('ERROR 400: Responds with an error message when attempting to POST an invalid body', () => {
+    const newComment = {
+      username: 'lurker',
+      body: null,
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 400: Responds with an error message when attempting to POST an invalid username not yet in our database', () => {
     const newComment = {
       username: 'bobby',
-      body: null,
+      body: 'test',
     };
     return request(app)
       .post('/api/articles/1/comments')
@@ -234,5 +269,18 @@ describe('/api/articles/:article_id/comments', () => {
        .then(({ body }) => {
          expect(body.msg).toBe('Invalid input');
        });
+  });
+  test('ERROR 400: Responds with an error message when passed an article_id which does not yet exist', () => {
+    const newComment = {
+      username: 'lurker',
+      body: 'test',
+    };
+    return request(app)
+      .post('/api/articles/99999/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
   });
 });
