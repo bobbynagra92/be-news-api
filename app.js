@@ -1,6 +1,6 @@
 const express = require('express');
 const getTopics = require('./controllers/topics.controller');
-const {getArticleByID, getAllArticles} = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles, getArticleComments} = require('./controllers/articles.controller')
 const {
   invalidPathErrors,
   handleServerErrors,
@@ -16,6 +16,7 @@ app.get('/api', (req, res) => {
 app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticleByID);
 app.get('/api/articles', getAllArticles)
+app.get('/api/articles/:article_id/comments', getArticleComments);
 
 app.all('/*', invalidPathErrors);
 app.use(customErrors);

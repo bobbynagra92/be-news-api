@@ -72,19 +72,18 @@ describe('/api/articles/:article_id', () => {
   test('ERROR 400: Responds with an error message for an invalid article request', () => {
     return request(app)
       .get('/api/articles/not-an-article-id')
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe('Invalid input');
       });
   });
   test('ERROR 404: Respond with an error message if the article_id is not in the database', () => {
-    return (
-      request(app)
+    return request(app)
       .get('/api/articles/9999999')
-        .then(({ body }) => {
-          expect
-          expect(body.msg).toBe('No article with that ID');
-        })
-    );
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No article with that ID');
+      });
   });
 });
 
@@ -121,5 +120,63 @@ describe('/api/articles', () => {
       .then(({ body }) => {
         expect(body.msg).toBe('Invalid path');
       });
+  });
+});
+
+describe('/api/articles/:article_id/comments', () => {
+  test('GET 200: Responds with an array of the comments associated to an article', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSorted({
+          key: 'created_at',
+          descending: true,
+        });
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+      });
+  });
+
+  test('GET 200: Responds with an empty array when there are no comment but article_id is valid', () => {
+    return request(app)
+      .get('/api/articles/4/comments')
+      .expect(200)
+      .then(({body}) => {
+        const {comments} = body
+        expect(comments).toEqual([]);
+      })
+  })
+
+  test('ERROR 400: Responds with an error message for an article_id which is not within the database', () => {
+    return (
+      request(app)
+        .get('/api/articles/not-a-num/comments')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Invalid input');
+        })
+    );
+  });
+
+  test('ERROR 404: Responds with an error message when passed an invalid path', () => {
+    return (
+      request(app)
+        .get('/api/articles/99999/comments')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('No article with that ID');
+        })
+    );
   });
 });
