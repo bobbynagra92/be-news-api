@@ -158,25 +158,81 @@ describe('/api/articles/:article_id/comments', () => {
       })
   })
 
-  test('ERROR 400: Responds with an error message for an article_id which is not within the database', () => {
-    return (
-      request(app)
-        .get('/api/articles/not-a-num/comments')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Invalid input');
-        })
-    );
+  test('ERROR 400: Responds with an error message when passed an invalid request input', () => {
+    return request(app)
+      .get('/api/articles/not-a-num/comments')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
   });
 
-  test('ERROR 404: Responds with an error message when passed an invalid path', () => {
-    return (
-      request(app)
-        .get('/api/articles/99999/comments')
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe('No article with that ID');
-        })
-    );
+  test('ERROR 404: Responds with an error message for an article_id which is not within the database', () => {
+    return request(app)
+      .get('/api/articles/99999/comments')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No article with that ID');
+      });
+  });
+});
+
+describe('/api/articles/:article_id/comments', () => {
+  test('POST 201: Adds comment and responds with posted comment', () => {
+    const newComment = {
+      username: 'lurker',
+      body: 'test',
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: 1,
+        });
+      });
+  });
+  test('ERROR 400: Responds with an error message when attempting to POST an invalid comment', () => {
+    const newComment = {
+      username: 'bobby',
+      body: null,
+    };
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 400: Responds with an error message when missing required POST field(s)', () => {
+    const newComment = {};
+    return request(app)
+      .post('/api/articles/1/comments')
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 400: Responds with an error message when passed an invalid api request', () => {
+     const newComment = {
+       username: 'lurker',
+       body: 'test',
+     };
+     return request(app)
+       .post('/api/articles/not-a-num/comments')
+       .send(newComment)
+       .expect(400)
+       .then(({ body }) => {
+         expect(body.msg).toBe('Invalid input');
+       });
   });
 });
