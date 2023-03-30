@@ -284,3 +284,92 @@ describe('/api/articles/:article_id/comments', () => {
       });
   });
 });
+
+describe('/api/articles/:article_id', () => {
+  test('PATCH 200: Responds with the updated article with increased votes', () => {
+    const patchVotes = { inc_votes: 10 };
+    return request(app)
+      .patch('/api/articles/5')
+      .send(patchVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: 'rogersop',
+          title: 'UNCOVERED: catspiracy to bring down democracy',
+          article_id: 5,
+          topic: 'cats',
+          body: 'Bastet walks amongst us, and the cats are taking arms!',
+          created_at: '2020-08-03T13:14:00.000Z',
+          votes: 10,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('PATCH 200: Responds with the updated article with decreased votes', () => {
+    const patchVotes = { inc_votes: -10 };
+    return request(app)
+      .patch('/api/articles/5')
+      .send(patchVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: 'rogersop',
+          title: 'UNCOVERED: catspiracy to bring down democracy',
+          article_id: 5,
+          topic: 'cats',
+          body: 'Bastet walks amongst us, and the cats are taking arms!',
+          created_at: '2020-08-03T13:14:00.000Z',
+          votes: -10,
+          article_img_url:
+            'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+        });
+      });
+  });
+  test('ERROR 400: Responds with an error message when missing required PATCH information', () => {
+    const patchVotes = {};
+    return request(app)
+      .patch('/api/articles/5')
+      .send(patchVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 400: Responds with an error message when attempting to PATCH with an invalid request body', () => {
+    const patchVotes = { inc_votes: 'hello' };
+    return request(app)
+      .patch('/api/articles/5')
+      .send(patchVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test(
+    'ERROR 404: Responds with an error message when passed an article_id which does not yet exist', () => {
+      const patchVotes = { inc_votes: 10 };
+      return request(app)
+        .patch('/api/articles/999999')
+        .send(patchVotes)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('No article with that ID');
+        });
+    }
+  );
+  test(
+    'ERROR 400: Responds with an error message when passed an invalid api request', () => {
+      const patchVotes = { inc_votes: 10 };
+      return request(app)
+        .patch('/api/articles/not-a-num')
+        .send(patchVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Invalid input');
+        });
+    }
+  );
+});

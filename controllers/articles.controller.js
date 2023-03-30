@@ -1,4 +1,4 @@
-const {fetchArticle, fetchArticlesPlusCommentCount, fetchArticleComments, addComment} = require('../models/articles.model')
+const {fetchArticle, fetchArticlesPlusCommentCount, fetchArticleComments, addComment, changeVotes} = require('../models/articles.model')
 
 exports.getArticleByID = (req,res, next) => {
   const {article_id} = req.params; 
@@ -32,4 +32,13 @@ exports.postArticleComments = (req, res, next) => {
     res.status(201).send({comment});
   })
   .catch(next)
+}
+
+exports.patchArticleVotes = (req, res, next) => {
+  const {article_id} = req.params
+  const votes = req.body.inc_votes; 
+  Promise.all([changeVotes(article_id, votes), fetchArticle(article_id)]).then(result=> {
+    res.status(200).send({article: result[0]});
+  })
+  .catch(next);
 }
