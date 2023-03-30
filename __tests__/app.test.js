@@ -286,12 +286,12 @@ describe('/api/articles/:article_id/comments', () => {
 });
 
 describe('/api/articles/:article_id', () => {
-  test('PATCH 202: Responds with the updated article with increased votes', () => {
+  test('PATCH 200: Responds with the updated article with increased votes', () => {
     const patchVotes = { inc_votes: 10 };
     return request(app)
       .patch('/api/articles/5')
       .send(patchVotes)
-      .expect(202)
+      .expect(200)
       .then(({ body }) => {
         const { article } = body;
         expect(article).toMatchObject({
@@ -307,12 +307,12 @@ describe('/api/articles/:article_id', () => {
         });
       });
   });
-  test('PATCH 202: Responds with the updated article with decreased votes', () => {
+  test('PATCH 200: Responds with the updated article with decreased votes', () => {
     const patchVotes = { inc_votes: -10 };
     return request(app)
       .patch('/api/articles/5')
       .send(patchVotes)
-      .expect(202)
+      .expect(200)
       .then(({ body }) => {
         const { article } = body;
         expect(article).toMatchObject({

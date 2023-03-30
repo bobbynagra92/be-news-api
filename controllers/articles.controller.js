@@ -38,7 +38,7 @@ exports.patchArticleVotes = (req, res, next) => {
   const {article_id} = req.params
   const votes = req.body.inc_votes; 
   Promise.all([changeVotes(article_id, votes), fetchArticle(article_id)]).then(result=> {
-    res.status(202).send({article: result[0]});
+    res.status(200).send({article: result[0]});
   })
   .catch(next);
 }
