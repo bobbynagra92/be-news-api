@@ -234,7 +234,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(body.msg).toBe('Invalid input');
       });
   });
-  test('ERROR 400: Responds with an error message when attempting to POST an invalid username not yet in our database', () => {
+  test('ERROR 404: Responds with an error message when attempting to POST an invalid username not yet in our database', () => {
     const newComment = {
       username: 'bobby',
       body: 'test',
@@ -242,9 +242,9 @@ describe('/api/articles/:article_id/comments', () => {
     return request(app)
       .post('/api/articles/1/comments')
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Invalid input');
+        expect(body.msg).toBe('Username does not currently exist in database');
       });
   });
   test('ERROR 400: Responds with an error message when missing required POST field(s)', () => {
@@ -270,7 +270,7 @@ describe('/api/articles/:article_id/comments', () => {
          expect(body.msg).toBe('Invalid input');
        });
   });
-  test('ERROR 400: Responds with an error message when passed an article_id which does not yet exist', () => {
+  test('ERROR 404: Responds with an error message when passed an article_id which does not yet exist', () => {
     const newComment = {
       username: 'lurker',
       body: 'test',
@@ -278,9 +278,9 @@ describe('/api/articles/:article_id/comments', () => {
     return request(app)
       .post('/api/articles/99999/comments')
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe('Invalid input');
+        expect(body.msg).toBe('No article with that ID');
       });
   });
 });
