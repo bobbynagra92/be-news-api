@@ -373,3 +373,25 @@ describe('/api/articles/:article_id', () => {
     }
   );
 });
+
+describe('/api/comments/:comment_id', () => {
+  test('DELETE 204: Responds with empty object', () => {
+    return request(app).delete('/api/comments/1').expect(204);
+  });
+  test('ERROR 400: Responds with an error message when passed an invalid api request', () => {
+    return request(app)
+      .delete('/api/comments/not-a-num')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid input');
+      });
+  });
+  test('ERROR 404: Responds with an error message when passed an comment_id which does not yet exist', () => {
+    return request(app)
+      .delete('/api/comments/999999')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No comment with that ID');
+      });
+  });
+});
