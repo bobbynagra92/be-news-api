@@ -43,3 +43,19 @@ exports.fetchArticleComments = (article_id) => {
       return result.rows;
     });
 };
+
+exports.addComment = (article_id, comment) => {
+  let votes = 0;
+  if (comment.hasOwnProperty('votes')){
+    votes = comment.votes
+  }
+  return db.query(`
+    INSERT INTO comments
+      (body, votes, author, article_id)
+    VALUES
+      ($1, $2, $3, $4)
+    RETURNING *;
+`, [comment.body, votes, comment.username, article_id]).then((result) => {
+  return result.rows[0];
+})
+};
