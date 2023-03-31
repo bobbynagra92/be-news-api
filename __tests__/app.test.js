@@ -517,12 +517,12 @@ describe('/api/articles', () => {
         expect(body.msg).toEqual('Invalid order query');
       });
   });
-  // test('ERROR 404: Returns an error message when a topic does not yet exist in the database', () => {
-  //   return request(app)
-  //     .get('/api/articles?topic=football')
-  //     .expect(404)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toEqual('Invalid topic query');
-  //     });
-  // });
+  test('ERROR 404: Returns an error message when a topic does not yet exist in the database', () => {
+    return request(app)
+      .get('/api/articles?topic=football')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual('Invalid topic query');
+      });
+  });
 });

@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const fetchTopics = require('./topics.model');
 
 exports.fetchArticle = (article_id) => {
   return db
@@ -15,7 +16,7 @@ exports.fetchArticle = (article_id) => {
     });
 };
 
-exports.fetchArticlesPlusCommentCount = (topic, sort_by, order) => {
+exports.fetchArticlesPlusCommentCount = async (topic, sort_by, order) => {
   let retrieveArticlesQueryString = `
       SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comment_id) AS INTEGER) AS comment_count
       FROM articles
@@ -24,32 +25,63 @@ exports.fetchArticlesPlusCommentCount = (topic, sort_by, order) => {
   const queryParameters = [];
 
   if (topic) {
-    retrieveArticlesQueryString += ` WHERE topic = $1`
+    const topicsArr = await fetchTopics();
+
+    const topicsList = topicsArr.map(topicObj => {
+      return topicObj.slug;
+    })
+
+    if (!topicsList.includes(topic)){
+      return Promise.reject({ status: 404, msg: 'Invalid topic query' });
+    }
+
+    retrieveArticlesQueryString += ` WHERE topic = $1`;
     queryParameters.push(topic);
   }
 
-  retrieveArticlesQueryString += ` GROUP BY articles.article_id`
+  retrieveArticlesQueryString += ` GROUP BY articles.article_id`;
 
   if (!sort_by && !order) {
     retrieveArticlesQueryString += ` ORDER BY articles.created_at DESC;`;
   }
 
-  if (sort_by && !order){
-    retrieveArticlesQueryString += ` ORDER BY articles.${sort_by} DESC;`
-    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'].includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: 'Invalid sort query' });
-  }
-  }
+  if (sort_by && !order) {
+    retrieveArticlesQueryString += ` ORDER BY articles.${sort_by} DESC;`;
+    if (
+      ![
+        'author',
+        'title',
+        'article_id',
+        'topic',
+        'created_at',
+        'votes',
+        'article_img_url',
+        'comment_count',
+      ].includes(sort_by)
+    ) {
+      return Promise.reject({ status: 400, msg: 'Invalid sort query' });
+    }
+  } else if (sort_by && order) {
+    retrieveArticlesQueryString += ` ORDER BY articles.${sort_by} ${order};`;
 
-  else if (sort_by && order){
-    retrieveArticlesQueryString += ` ORDER BY articles.${sort_by} ${order};`
+    if (
+      ![
+        'author',
+        'title',
+        'article_id',
+        'topic',
+        'created_at',
+        'votes',
+        'article_img_url',
+        'comment_count',
+      ].includes(sort_by)
+    ) {
+      return Promise.reject({ status: 400, msg: 'Invalid sort query' });
+    }
 
-      if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'].includes(sort_by)) {
-        return Promise.reject({ status: 400, msg: 'Invalid sort query' });}
-
-      if (!['asc', 'desc', 'ASC', 'DESC'].includes(order)) {
-       return Promise.reject({ status: 400, msg: 'Invalid order query' });
-     } 
+    if (!['asc', 'desc', 'ASC', 'DESC'].includes(order)) {
+      return Promise.reject({ status: 400, msg: 'Invalid order query' });
+    }
   }
 
   return db
