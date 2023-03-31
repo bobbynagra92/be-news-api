@@ -395,3 +395,27 @@ describe('/api/comments/:comment_id', () => {
       });
   });
 });
+
+describe('/api/users', () => {
+  test('GET 200: Responds with an array of all the stored users', () => {
+    return request(app).get('/api/users').expect(200).then(({body}) => {
+      const {users} = body;
+      expect(users).toHaveLength(4);
+      users.forEach(user => {
+        expect(user).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        })
+      })
+    })
+  })
+  test('ERROR 404: Responds with an error message when passed an invalid path', () => {
+    return request(app)
+      .get('/api/not-a-valid-path')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid path');
+      });
+  });
+});
