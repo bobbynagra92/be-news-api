@@ -419,3 +419,110 @@ describe('/api/users', () => {
       });
   });
 });
+
+describe('/api/articles', () => {
+  test('GET 200: Accepts a Topic query which responds with only articles of that topic', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: 'mitch',
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('GET 200: Accepts a Topic and sort_by query which responds with only articles of that topic sorted in descending order', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=votes')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        expect(articles).toBeSorted({
+          key: 'votes',
+          descending: true,
+        });
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: 'mitch',
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('GET 200: Accepts a Topic, sort_by and order query which responds with only articles of the topic tag', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=author&order=ASC')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        expect(articles).toBeSorted({
+          key: 'author',
+          ascending: true,
+        });
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: 'mitch',
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('GET 200: Returns an empty array when a topic exists but has no associated articles', () => {
+    return request(app)
+      .get('/api/articles?topic=paper')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual([]);
+      });
+  });
+  test('ERROR 400: Returns an error message when sort_by is invalid', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=vegetable')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual('Invalid sort query');
+      });
+  });
+  test('ERROR 400: Returns an error message when order is invalid', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&sort_by=votes&order=happy')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual('Invalid order query');
+      });
+  });
+  // test('ERROR 404: Returns an error message when a topic does not yet exist in the database', () => {
+  //   return request(app)
+  //     .get('/api/articles?topic=football')
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toEqual('Invalid topic query');
+  //     });
+  // });
+});

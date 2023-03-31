@@ -17,7 +17,10 @@ exports.getArticleByID = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  fetchArticlesPlusCommentCount()
+  const {topic, sort_by, order} = req.query;
+
+  fetchArticlesPlusCommentCount(topic, sort_by, order)
+  
     .then((articles) => {
       res.status(200).send({ articles });
     })
