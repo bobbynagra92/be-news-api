@@ -16,11 +16,13 @@ const {
   customErrors,
 } = require('./controllers/error-handling.controllers');
 
+const jsonEndpoints = require('./endpoints.json');
+
 const app = express();
 app.use(express.json());
 
 app.get('/api', (req, res) => {
-  res.status(200).send({ msg: 'Server is up and running...' });
+  res.status(200).send({msg: jsonEndpoints});
 });
 app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticleByID);

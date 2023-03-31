@@ -15,13 +15,98 @@
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
+          "article_id": 34,
+          "author": "grumpy19",
+          "title": "The Notorious MSG’s Unlikely Formula For Success",
           "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": "2020-11-22T11:13:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
+          "comment_count": 11
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves up a specified article",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "author": "jessjelly",
+        "title": "Running a Node App",
+        "topic": "coding",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "created_at": "2020-11-07T06:03:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+        "comment_count": 8
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves up an array of all the comment associated with an article",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [{
+        "comment_id": 12,
+        "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        "votes": 100,
+        "author": "icellusedkars",
+        "article_id": 1,
+        "created_at": 1583025180000
+      }]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves up an array of all the user on the platform",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a new comment to an article and returns the posted comment",
+    "queries": [],
+    "requiredInputs": ["username", "body"],
+    "optionalInputs": ["votes"],
+    "exampleRequest": {
+      "username": "lurker",
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+    },
+    "exampleResponse": {
+      "comment_id": 13,
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "votes": 14,
+      "author": "butter_bridge",
+      "article_id": 1,
+      "created_at": 1604113380000
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increases or decreases the number of votes an article has",
+    "queries": [],
+    "requiredInputs": ["inc_votes"],
+    "exampleRequest": { "inc_votes": -10 },
+    "exampleResponse": {
+      "author": "rogersop",
+      "title": "UNCOVERED: catspiracy to bring down democracy",
+      "article_id": 5,
+      "topic": "cats",
+      "body": "Bastet walks amongst us, and the cats are taking arms!",
+      "created_at": "2020-08-03T13:14:00.000Z",
+      "votes": -10,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a specified comment",
+    "queries": []
   }
 }
