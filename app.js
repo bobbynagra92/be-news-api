@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 const getTopics = require('./controllers/topics.controller');
 const {getUsers} = require('./controllers/users.controller');
 const {
@@ -20,6 +21,7 @@ const jsonEndpoints = require('./endpoints.json');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get('/api', (req, res) => {
   res.status(200).send({msg: jsonEndpoints});
