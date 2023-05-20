@@ -2,7 +2,7 @@
 
 This repo is the backend part of my news app. You can view the completed project at https://bbb-news.netlify.app/ . You can find the frontend code for the project at https://github.com/bobbynagra92/nc-news . 
 
-The news app uses JavaScript with Node.js to create API endpoints which are then accessed by the frontend. The API can be accessed at https://be-news-api-m2rq.onrender.com . 
+The news app uses JavaScript with Node.js to create API endpoints which are then accessed by the frontend. The API can be accessed at https://be-news-api-m2rq.onrender.com/api . The link provides a list of all the endpoints which exist for the project.
 
 The app uses JavaScript with Node.js and Express. Testing has been carried out using Jest and Supertest.
 
@@ -23,7 +23,7 @@ npm install express
 ## Data
 User accounts, articles and comments were created with PostgreSQL.
 
-The test and development data for the project can be found within the ***db/data*** folder.
+The test and development data for the project can be found within the ***db/data*** folder. The files within these folders show the format which should be followed for each dataset.
 
 `.env` files will need to be added which specify the environment variables which direct the code to your respective database. The code in the file should be as follows:
 
